@@ -3,7 +3,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -11,11 +10,8 @@
 
     <title>Smart Shopping Trolley</title>
 
-
     <!-- Barcode Scanner Library -->
-
     <script src="https://unpkg.com/html5-qrcode"></script>
-
 
     <style>
 
@@ -27,7 +23,6 @@
             text-align: center;
         }
 
-
         .container {
             max-width: 500px;
             margin: auto;
@@ -37,11 +32,9 @@
             box-shadow: 0 0 10px #aaa;
         }
 
-
         h1 {
             font-size: 26px;
         }
-
 
         button {
             background: #007bff;
@@ -54,18 +47,15 @@
             cursor: pointer;
         }
 
-
         button:hover {
             background: #0056b3;
         }
-
 
         #reader {
             width: 100%;
             max-width: 400px;
             margin: 20px auto;
         }
-
 
         #status {
             background: #eeeeee;
@@ -74,7 +64,6 @@
             margin: 15px 0;
             font-weight: bold;
         }
-
 
         #barcodeDisplay {
             background: #eeeeee;
@@ -86,7 +75,6 @@
             word-break: break-all;
         }
 
-
         #productDisplay {
             background: #e8f5e9;
             padding: 12px;
@@ -95,12 +83,10 @@
             font-size: 18px;
         }
 
-
         #cart {
             text-align: left;
             margin-top: 25px;
         }
-
 
         .cartItem {
             background: #f5f5f5;
@@ -108,7 +94,6 @@
             margin: 8px 0;
             border-radius: 8px;
         }
-
 
         #total {
             font-size: 24px;
@@ -121,20 +106,15 @@
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
-
     <h1>🛒 Smart Shopping Trolley</h1>
-
 
     <p>
         Point your phone camera at a barcode
     </p>
-
 
     <!-- START SCANNER -->
 
@@ -142,18 +122,15 @@
         📷 Start Scanner
     </button>
 
-
     <!-- STOP SCANNER -->
 
     <button onclick="stopScanner()">
         ⛔ Stop Scanner
     </button>
 
-
     <!-- CAMERA -->
 
     <div id="reader"></div>
-
 
     <!-- STATUS -->
 
@@ -161,20 +138,17 @@
         Scanner not started
     </div>
 
-
     <!-- BARCODE -->
 
     <div id="barcodeDisplay">
         Barcode: Not scanned
     </div>
 
-
     <!-- PRODUCT -->
 
     <div id="productDisplay">
         Product: None
     </div>
-
 
     <!-- SHOPPING CART -->
 
@@ -188,20 +162,16 @@
 
     </div>
 
-
     <!-- TOTAL -->
 
     <div id="total">
         Total: Rs. 0
     </div>
 
-
 </div>
 
 
-
 <script>
-
 
 // ========================================
 // SHOPPING CART
@@ -225,31 +195,22 @@ let scannerRunning = false;
 
 function startScanner() {
 
-
     if (scannerRunning) {
-
         return;
-
     }
-
 
     document.getElementById("status").innerText =
         "📷 Starting camera...";
 
-
     scanner = new Html5Qrcode("reader");
-
 
     const config = {
 
         fps: 15,
 
         qrbox: {
-
             width: 300,
-
             height: 180
-
         },
 
         formatsToSupport: [
@@ -286,7 +247,6 @@ function startScanner() {
 
         function(decodedText, decodedResult) {
 
-
             console.log(
                 "Barcode detected:",
                 decodedText
@@ -316,7 +276,6 @@ function startScanner() {
 
             processBarcode(decodedText);
 
-
         },
 
 
@@ -332,50 +291,39 @@ function startScanner() {
 
     )
 
-
     .then(function() {
 
-
         scannerRunning = true;
-
 
         document.getElementById(
             "status"
         ).innerText =
             "📷 Scanning... Point at barcode";
 
-
     })
 
 
     .catch(function(error) {
 
-
         console.log(error);
 
-
         scannerRunning = false;
-
 
         document.getElementById(
             "status"
         ).innerText =
             "❌ Camera error";
 
-
         alert(
 
             "Camera could not start.\n\n" +
-
             "Please allow camera permission."
 
         );
 
-
     });
 
 }
-
 
 
 // ========================================
@@ -384,40 +332,29 @@ function startScanner() {
 
 function stopScanner() {
 
-
     if (
-
         scanner !== null &&
         scannerRunning === true
-
     ) {
-
 
         scanner.stop()
 
         .then(function() {
 
-
             scanner.clear();
 
-
             scannerRunning = false;
-
 
             document.getElementById(
                 "status"
             ).innerText =
                 "Scanner stopped";
 
-
         })
-
 
         .catch(function(error) {
 
-
             console.log(error);
-
 
         });
 
@@ -426,16 +363,13 @@ function stopScanner() {
 }
 
 
-
 // ========================================
 // PROCESS BARCODE
 // ========================================
 
 function processBarcode(barcode) {
 
-
     barcode = barcode.trim();
-
 
     console.log(
         "Processing barcode:",
@@ -448,17 +382,13 @@ function processBarcode(barcode) {
     // ====================================
 
     if (
-
         barcode === "8901234567890"
-
     ) {
-
 
         addProduct(
             "Milk 1L",
             250
         );
-
 
     }
 
@@ -468,17 +398,13 @@ function processBarcode(barcode) {
     // ====================================
 
     else if (
-
         barcode === "8901234567891"
-
     ) {
-
 
         addProduct(
             "Bread",
             180
         );
-
 
     }
 
@@ -488,17 +414,13 @@ function processBarcode(barcode) {
     // ====================================
 
     else if (
-
         barcode === "8901234567892"
-
     ) {
-
 
         addProduct(
             "Biscuit",
             120
         );
-
 
     }
 
@@ -509,20 +431,17 @@ function processBarcode(barcode) {
 
     else {
 
-
         document.getElementById(
             "productDisplay"
         ).innerText =
 
             "❌ Product not found\n" +
-
             "Barcode: " + barcode;
 
 
         alert(
 
             "❌ Product not found!\n\n" +
-
             "Barcode: " + barcode
 
         );
@@ -532,33 +451,60 @@ function processBarcode(barcode) {
 }
 
 
-
 // ========================================
 // ADD PRODUCT
 // ========================================
 
 function addProduct(name, price) {
 
-    // Send product to ESP32
-    fetch("http://192.168.179.108/product?name=" 
-          + encodeURIComponent(name) 
-          + "&price=" 
-          + encodeURIComponent(price))
+    // ====================================
+    // SEND PRODUCT TO ESP32
+    // ====================================
+
+    fetch(
+        "http://192.168.179.108/product?name="
+        + encodeURIComponent(name)
+        + "&price="
+        + encodeURIComponent(price),
+        {
+            mode: "no-cors"
+        }
+    )
+
     .then(response => response.text())
+
     .then(data => {
-        console.log("ESP32:", data);
+
+        console.log(
+            "ESP32:",
+            data
+        );
+
     })
+
     .catch(error => {
-        console.log("ESP32 connection error:", error);
+
+        console.log(
+            "ESP32 connection error:",
+            error
+        );
+
     });
 
-    document.getElementById("productDisplay").innerText =
+
+    // ====================================
+    // SHOW PRODUCT
+    // ====================================
+
+    document.getElementById(
+        "productDisplay"
+    ).innerText =
         "✅ " + name + " - Rs. " + price;
 
 
-  
-
-    // Search existing product
+    // ====================================
+    // SEARCH EXISTING PRODUCT
+    // ====================================
 
     let existingProduct = cart.find(
 
@@ -577,9 +523,7 @@ function addProduct(name, price) {
 
     if (existingProduct) {
 
-
         existingProduct.quantity++;
-
 
     }
 
@@ -589,7 +533,6 @@ function addProduct(name, price) {
     // ====================================
 
     else {
-
 
         cart.push({
 
@@ -609,16 +552,13 @@ function addProduct(name, price) {
 }
 
 
-
 // ========================================
 // UPDATE CART
 // ========================================
 
 function updateCart() {
 
-
     let cartItems =
-
         document.getElementById(
             "cartItems"
         );
@@ -636,10 +576,8 @@ function updateCart() {
 
     if (cart.length === 0) {
 
-
         cartItems.innerHTML =
             "No products added";
-
 
     }
 
@@ -652,9 +590,7 @@ function updateCart() {
 
         function(product) {
 
-
             let subtotal =
-
                 product.price *
                 product.quantity;
 
@@ -663,7 +599,6 @@ function updateCart() {
 
 
             let item =
-
                 document.createElement(
                     "div"
                 );
@@ -695,7 +630,6 @@ function updateCart() {
 
             cartItems.appendChild(item);
 
-
         }
 
     );
@@ -714,7 +648,6 @@ function updateCart() {
 }
 
 </script>
-
 
 </body>
 
