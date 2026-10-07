@@ -1,0 +1,722 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Shopping Trolley</title>
+
+
+    <!-- Barcode Scanner Library -->
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px #aaa;
+        }
+
+
+        h1 {
+            font-size: 26px;
+        }
+
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 13px 22px;
+            margin: 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+
+        button:hover {
+            background: #0056b3;
+        }
+
+
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+
+        #status {
+            background: #eeeeee;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+
+        #barcodeDisplay {
+            background: #eeeeee;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+
+        #productDisplay {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+
+        #cart {
+            text-align: left;
+            margin-top: 25px;
+        }
+
+
+        .cartItem {
+            background: #f5f5f5;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+        }
+
+
+        #total {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <h1>🛒 Smart Shopping Trolley</h1>
+
+
+    <p>
+        Point your phone camera at a barcode
+    </p>
+
+
+    <!-- START SCANNER -->
+
+    <button onclick="startScanner()">
+        📷 Start Scanner
+    </button>
+
+
+    <!-- STOP SCANNER -->
+
+    <button onclick="stopScanner()">
+        ⛔ Stop Scanner
+    </button>
+
+
+    <!-- CAMERA -->
+
+    <div id="reader"></div>
+
+
+    <!-- STATUS -->
+
+    <div id="status">
+        Scanner not started
+    </div>
+
+
+    <!-- BARCODE -->
+
+    <div id="barcodeDisplay">
+        Barcode: Not scanned
+    </div>
+
+
+    <!-- PRODUCT -->
+
+    <div id="productDisplay">
+        Product: None
+    </div>
+
+
+    <!-- SHOPPING CART -->
+
+    <div id="cart">
+
+        <h2>🛍️ Shopping Cart</h2>
+
+        <div id="cartItems">
+            No products added
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL -->
+
+    <div id="total">
+        Total: Rs. 0
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// ========================================
+// SHOPPING CART
+// ========================================
+
+let cart = [];
+
+
+// ========================================
+// SCANNER
+// ========================================
+
+let scanner = null;
+
+let scannerRunning = false;
+
+
+// ========================================
+// START SCANNER
+// ========================================
+
+function startScanner() {
+
+
+    if (scannerRunning) {
+
+        return;
+
+    }
+
+
+    document.getElementById("status").innerText =
+        "📷 Starting camera...";
+
+
+    scanner = new Html5Qrcode("reader");
+
+
+    const config = {
+
+        fps: 15,
+
+        qrbox: {
+
+            width: 300,
+
+            height: 180
+
+        },
+
+        formatsToSupport: [
+
+            Html5QrcodeSupportedFormats.EAN_13,
+
+            Html5QrcodeSupportedFormats.EAN_8,
+
+            Html5QrcodeSupportedFormats.UPC_A,
+
+            Html5QrcodeSupportedFormats.UPC_E,
+
+            Html5QrcodeSupportedFormats.CODE_128,
+
+            Html5QrcodeSupportedFormats.CODE_39
+
+        ]
+
+    };
+
+
+    scanner.start(
+
+        {
+            facingMode: "environment"
+        },
+
+        config,
+
+
+        // =================================
+        // BARCODE FOUND
+        // =================================
+
+        function(decodedText, decodedResult) {
+
+
+            console.log(
+                "Barcode detected:",
+                decodedText
+            );
+
+
+            // Show barcode
+
+            document.getElementById(
+                "barcodeDisplay"
+            ).innerText =
+                "Barcode: " + decodedText;
+
+
+            document.getElementById(
+                "status"
+            ).innerText =
+                "✅ Barcode detected!";
+
+
+            // Stop scanner
+
+            stopScanner();
+
+
+            // Process barcode
+
+            processBarcode(decodedText);
+
+
+        },
+
+
+        // =================================
+        // SCANNING
+        // =================================
+
+        function(errorMessage) {
+
+            // Camera continues scanning
+
+        }
+
+    )
+
+
+    .then(function() {
+
+
+        scannerRunning = true;
+
+
+        document.getElementById(
+            "status"
+        ).innerText =
+            "📷 Scanning... Point at barcode";
+
+
+    })
+
+
+    .catch(function(error) {
+
+
+        console.log(error);
+
+
+        scannerRunning = false;
+
+
+        document.getElementById(
+            "status"
+        ).innerText =
+            "❌ Camera error";
+
+
+        alert(
+
+            "Camera could not start.\n\n" +
+
+            "Please allow camera permission."
+
+        );
+
+
+    });
+
+}
+
+
+
+// ========================================
+// STOP SCANNER
+// ========================================
+
+function stopScanner() {
+
+
+    if (
+
+        scanner !== null &&
+        scannerRunning === true
+
+    ) {
+
+
+        scanner.stop()
+
+        .then(function() {
+
+
+            scanner.clear();
+
+
+            scannerRunning = false;
+
+
+            document.getElementById(
+                "status"
+            ).innerText =
+                "Scanner stopped";
+
+
+        })
+
+
+        .catch(function(error) {
+
+
+            console.log(error);
+
+
+        });
+
+    }
+
+}
+
+
+
+// ========================================
+// PROCESS BARCODE
+// ========================================
+
+function processBarcode(barcode) {
+
+
+    barcode = barcode.trim();
+
+
+    console.log(
+        "Processing barcode:",
+        barcode
+    );
+
+
+    // ====================================
+    // MILK
+    // ====================================
+
+    if (
+
+        barcode === "8901234567890"
+
+    ) {
+
+
+        addProduct(
+            "Milk 1L",
+            250
+        );
+
+
+    }
+
+
+    // ====================================
+    // BREAD
+    // ====================================
+
+    else if (
+
+        barcode === "8901234567891"
+
+    ) {
+
+
+        addProduct(
+            "Bread",
+            180
+        );
+
+
+    }
+
+
+    // ====================================
+    // BISCUIT
+    // ====================================
+
+    else if (
+
+        barcode === "8901234567892"
+
+    ) {
+
+
+        addProduct(
+            "Biscuit",
+            120
+        );
+
+
+    }
+
+
+    // ====================================
+    // UNKNOWN
+    // ====================================
+
+    else {
+
+
+        document.getElementById(
+            "productDisplay"
+        ).innerText =
+
+            "❌ Product not found\n" +
+
+            "Barcode: " + barcode;
+
+
+        alert(
+
+            "❌ Product not found!\n\n" +
+
+            "Barcode: " + barcode
+
+        );
+
+    }
+
+}
+
+
+
+// ========================================
+// ADD PRODUCT
+// ========================================
+
+function addProduct(name, price) {
+
+    // Send product to ESP32
+    fetch("http://192.168.179.108/product?name=" 
+          + encodeURIComponent(name) 
+          + "&price=" 
+          + encodeURIComponent(price))
+    .then(response => response.text())
+    .then(data => {
+        console.log("ESP32:", data);
+    })
+    .catch(error => {
+        console.log("ESP32 connection error:", error);
+    });
+
+    document.getElementById("productDisplay").innerText =
+        "✅ " + name + " - Rs. " + price;
+
+
+  
+
+    // Search existing product
+
+    let existingProduct = cart.find(
+
+        function(product) {
+
+            return product.name === name;
+
+        }
+
+    );
+
+
+    // ====================================
+    // EXISTING PRODUCT
+    // ====================================
+
+    if (existingProduct) {
+
+
+        existingProduct.quantity++;
+
+
+    }
+
+
+    // ====================================
+    // NEW PRODUCT
+    // ====================================
+
+    else {
+
+
+        cart.push({
+
+            name: name,
+
+            price: price,
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    updateCart();
+
+}
+
+
+
+// ========================================
+// UPDATE CART
+// ========================================
+
+function updateCart() {
+
+
+    let cartItems =
+
+        document.getElementById(
+            "cartItems"
+        );
+
+
+    cartItems.innerHTML = "";
+
+
+    let total = 0;
+
+
+    // ====================================
+    // EMPTY CART
+    // ====================================
+
+    if (cart.length === 0) {
+
+
+        cartItems.innerHTML =
+            "No products added";
+
+
+    }
+
+
+    // ====================================
+    // DISPLAY CART
+    // ====================================
+
+    cart.forEach(
+
+        function(product) {
+
+
+            let subtotal =
+
+                product.price *
+                product.quantity;
+
+
+            total += subtotal;
+
+
+            let item =
+
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "cartItem";
+
+
+            item.innerHTML =
+
+                "🛒 <b>" +
+                product.name +
+                "</b><br><br>" +
+
+                "Barcode product<br>" +
+
+                "Price: Rs. " +
+                product.price +
+                "<br>" +
+
+                "Quantity: " +
+                product.quantity +
+                "<br>" +
+
+                "Subtotal: Rs. " +
+                subtotal;
+
+
+            cartItems.appendChild(item);
+
+
+        }
+
+    );
+
+
+    // ====================================
+    // TOTAL
+    // ====================================
+
+    document.getElementById(
+        "total"
+    ).innerText =
+
+        "Total: Rs. " + total;
+
+}
+
+</script>
+
+
+</body>
+
+</html>
+```
